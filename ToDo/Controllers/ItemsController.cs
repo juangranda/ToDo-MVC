@@ -48,7 +48,7 @@ namespace ToDo.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ItemID,ItemName,ListID,DueDateTime,Details")] Item item)
+        public ActionResult Create([Bind(Include = "ItemID,ItemName,ListID,DueDateTime,Details,isDone")] Item item)
         {
             if (ModelState.IsValid)
             {
@@ -60,6 +60,37 @@ namespace ToDo.Controllers
             ViewBag.ListID = new SelectList(db.Lists, "ListID", "ListTitle", item.ListID);
             return View(item);
         }
+
+
+
+
+
+
+        public ActionResult ToggleDone(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Item item = db.Items.Find(id);
+            if (item == null)
+            {
+                return HttpNotFound();
+            }
+
+            if(item.isDone)
+            {
+                item.isDone = false;
+            }
+            else
+            {
+                item.isDone = true;
+            }
+
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
 
         // GET: Items/Edit/5
         public ActionResult Edit(int? id)
@@ -82,7 +113,7 @@ namespace ToDo.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ItemID,ItemName,ListID,DueDateTime,Details")] Item item)
+        public ActionResult Edit([Bind(Include = "ItemID,ItemName,ListID,DueDateTime,Details,isDone")] Item item)
         {
             if (ModelState.IsValid)
             {
