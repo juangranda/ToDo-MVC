@@ -17,7 +17,10 @@ namespace ToDo.Controllers
         // GET: Items
         public ActionResult Index()
         {
-            var items = db.Items.Include(i => i.List);
+            var items = from n in db.Items
+                        orderby n.ListID, n.DueDateTime
+                        select n;
+
             return View(items.ToList());
         }
 
@@ -64,7 +67,7 @@ namespace ToDo.Controllers
 
 
 
-
+        
 
         public ActionResult ToggleDone(int? id)
         {
@@ -86,7 +89,6 @@ namespace ToDo.Controllers
             {
                 item.isDone = true;
             }
-
             db.SaveChanges();
             return RedirectToAction("Index");
         }
